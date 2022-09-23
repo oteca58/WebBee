@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "beekeeper": "Angelo",
+    "beehives": [
+      {
+        "serial_beekeeper": 1,
+        "place": "udine",
+        "state": "production",
+        "honeycomb": 1,
+        "pollin_trap": "false",
+        "propolis_net": "false",
+        "price": "9.9"
+      }
+    ]
+  }
+]
