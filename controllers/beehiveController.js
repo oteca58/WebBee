@@ -1,14 +1,15 @@
-const Beekeeper = require("./../models/beekeeperModel");
+const Beehive = require("./../models/beehiveModel");
 
-exports.getAllBeekeepers = async (req, res) => {
+exports.getAllBeehives = async (req, res) => {
   try {
-    const allBeekeeper = await Beekeeper.find(req.query);
+    console.log(req);
+    const allBeehives = await Beehive.find(req.query);
     res.status(200).json({
       status: "success",
       requestedAt: req.requestTime,
-      results: allBeekeeper.length,
+      results: allBeehives.length,
       data: {
-        allBeekeeper,
+        allBeehives,
       },
     });
   } catch (err) {
@@ -19,14 +20,14 @@ exports.getAllBeekeepers = async (req, res) => {
   }
 };
 
-exports.createBeekeeper = async (req, res) => {
+exports.createBeehive = async (req, res) => {
   try {
-    const newBeekeeper = await Beekeeper.create(req.body);
+    const newBeehive = await Beehive.create(req.body);
 
     res.status(201).json({
       status: "success",
       data: {
-        beekeeper: newBeekeeper,
+        beekeeper: newBeehive,
       },
     });
   } catch (err) {

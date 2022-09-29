@@ -131,4 +131,4 @@ dist
 
 # custom files
 
-.config/config.env
+/config/config.env

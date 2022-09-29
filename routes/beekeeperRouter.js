@@ -3,9 +3,11 @@ const beekeeperController = require("./../controllers/beekeeperController");
 
 const router = express.Router();
 
-router.route("/").get(beekeeperController.getAllBeekeepers);
-
-router.route("/create-beekeeper").post(beekeeperController.createBeekeeper);
+//methods for route /beekeepers
+router
+  .route("/")
+  .get(beekeeperController.getAllBeekeepers)
+  .post(beekeeperController.createBeekeeper);
 
 // Here below the routes that we are going to implement
 
