@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 //const slugify = require("slugify");
 
+//schema for beehive
 const beehiveSchema = new mongoose.Schema({
   serial_beehive: {
     type: Number,

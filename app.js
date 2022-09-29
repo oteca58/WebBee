@@ -5,12 +5,13 @@ const morgan = require("morgan");
 // /api/v1/beekeepers/beekeeper-1/beehives/beehive-1
 
 const beekeeperRouter = require("./routes/beekeeperRouter");
-//const beehiveRouter = require("./routes/beehiveRouter");
+const beehiveRouter = require("./routes/beehiveRouter");
 
 const app = express();
 
 // 1) MIDDLEWARES
 
+//if environment is development morgan is used
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
@@ -26,5 +27,6 @@ app.use((req, res, next) => {
 // 2) ROUTES
 
 app.use("/api/v1/beekeepers", beekeeperRouter);
+app.use("/api/v1/beehives", beehiveRouter);
 
 module.exports = app;
