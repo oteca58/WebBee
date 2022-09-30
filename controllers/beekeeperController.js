@@ -2,7 +2,7 @@ const Beekeeper = require("./../models/beekeeperModel");
 
 exports.getAllBeekeepers = async (req, res) => {
   try {
-    const allBeekeeper = await Beekeeper.find(req.query);
+    const allBeekeeper = await Beekeeper.find();
     res.status(200).json({
       status: "success",
       requestedAt: req.requestTime,

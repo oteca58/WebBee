@@ -9,4 +9,10 @@ router
   .get(beehiveController.getAllBeehives)
   .post(beehiveController.createBeehive);
 
+router
+  .route("/:id")
+  .get(beehiveController.getBeehive)
+  .patch(beehiveController.updateBeehive)
+  .delete(beehiveController.deleteBeehive);
+
 module.exports = router;
