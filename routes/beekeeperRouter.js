@@ -13,10 +13,10 @@ router
 
 //.post(beekeeperController.createBeekeper);
 
-// router
-//   .route("/:id")
-//   .get(beekeeperController.getBeekeeper)
-//   .patch(beekeeperController.updateBeekeper)
-//   .delete(beekeeperController.deleteBeekeeper);
+router
+  .route("/:id")
+  .get(beekeeperController.getBeekeeper)
+  .patch(beekeeperController.updateBeekeeper)
+  .delete(beekeeperController.deleteBeekeeper);
 
 module.exports = router;
