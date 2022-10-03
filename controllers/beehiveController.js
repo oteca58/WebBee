@@ -1,8 +1,12 @@
 const Beehive = require("./../models/beehiveModel");
+const catchAsync = require('../app.utils/catchAsync'); 
+const AppError = require("../app.utils/app.Error");
 
-exports.getAllBeehives = async (req, res) => {
-  try {
+exports.getAllBeehives = catchAsync(async (req, res, next) => {
     const allBeehives = await Beehive.find(req.query);
+    if(!allBeehives){
+      return next(new AppError('no Beehives found with that ID'))
+    };
     res.status(200).json({
       status: "success",
       requestedAt: req.requestTime,
@@ -11,17 +15,10 @@ exports.getAllBeehives = async (req, res) => {
         allBeehives,
       },
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "fail",
-      message: err,
-    });
-  }
-};
+});
 
-exports.createBeehive = async (req, res) => {
-  try {
-    const newBeehive = await Beehive.create(req.body);
+exports.createBeehive = catchAsync(async (req, res) => {
+  const newBeehive = await Beehive.create(req.body);
 
     res.status(201).json({
       status: "success",
@@ -29,17 +26,15 @@ exports.createBeehive = async (req, res) => {
         beekeeper: newBeehive,
       },
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err,
-    });
-  }
-};
+  
+});
 
-exports.getBeehive = async (req, res) => {
-  try {
+exports.getBeehive = catchAsync(async (req, res, next) => {
+  
     const myBeehive = await Beehive.findById(req.params.id);
+    if(!myBeehive){
+      return next(new AppError('no Beehives found with that ID'))
+    };
     res.status(200).json({
       status: "success",
       requestedAt: req.requestTime,
@@ -47,45 +42,34 @@ exports.getBeehive = async (req, res) => {
         myBeehive,
       },
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "fail",
-      message: err,
-    });
-  }
-};
+});
 
 //Insert message to header/response : deleted beehive
-exports.deleteBeehive = async (req, res) => {
-  try {
-    await Beehive.findByIdAndDelete(req.params.id);
+exports.deleteBeehive = catchAsync(async (req, res, next) => {
+  
+    const beehive =  await Beehive.findByIdAndDelete(req.params.id);
+    if(!beehive){
+      return next(new AppError('no Beehives found with that ID'))
+    };
     res.status(204).json({
       status: "success",
       requestedAt: req.requestTime,
       data: null,
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "fail",
-      message: err,
-    });
-  }
-};
+});
+  
 
 //implementation morgan
-exports.updateBeehive = async (req, res) => {
-  try {
+exports.updateBeehive = catchAsync(async (req, res, next) => {
     const beehive = await Beehive.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
+      runValidators: true  // Update validators validate the update operation against the model's schema
     });
+    if(!beehive){
+      return next(new AppError('no Beehives found with that ID'))
+    };
     res.status(200).json({
       status: "success",
       data: beehive,
     });
-  } catch (err) {
-    res.status(404).json({
-      status: "fail",
-      message: err,
-    });
-  }
-};
+});
