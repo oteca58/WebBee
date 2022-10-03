@@ -1,9 +1,10 @@
 const Beehive = require("./../models/beehiveModel");
 const catchAsync = require("./../utils/catchAsync");
-
+const AppError = require("./../utils/appError");
 
 exports.getAllBeehives = catchAsync(async (req, res, next) => {
     const allBeehives = await Beehive.find(req.query);
+
     res.status(200).json({
       status: "success",
       requestedAt: req.requestTime,
@@ -16,7 +17,7 @@ exports.getAllBeehives = catchAsync(async (req, res, next) => {
 
 
 exports.createBeehive = catchAsync(async (req, res, next) => {
-  const newBeehive = await Beehive.create(req.body);
+    const newBeehive = await Beehive.create(req.body);
 
     res.status(201).json({
       status: "success",
@@ -28,6 +29,12 @@ exports.createBeehive = catchAsync(async (req, res, next) => {
 
 exports.getBeehive = catchAsync(async (req, res, next) => {
     const myBeehive = await Beehive.findById(req.params.id);
+
+    // if Id is grammatical correct but doesn't exist 
+    if (!myBeehive) {
+      return next(new AppError("No Beehive found", 404))
+    }
+
     res.status(200).json({
       status: "success",
       requestedAt: req.requestTime,
@@ -39,7 +46,13 @@ exports.getBeehive = catchAsync(async (req, res, next) => {
 
 //Insert message to header/response : deleted beehive
 exports.deleteBeehive = catchAsync(async (req, res, next) => {
-    await Beehive.findByIdAndDelete(req.params.id);
+    const myBeehive = await Beehive.findByIdAndDelete(req.params.id);
+
+    // if Id is grammatical correct but doesn't exist 
+    if (!myBeehive) {
+      return next(new AppError("No Beehive found", 404))
+    }
+
     res.status(204).json({
       status: "success",
       requestedAt: req.requestTime,
@@ -49,9 +62,15 @@ exports.deleteBeehive = catchAsync(async (req, res, next) => {
 
 //implementation morgan
 exports.updateBeehive = catchAsync(async (req, res, next) => {
-    const beehive = await Beehive.findByIdAndUpdate(req.params.id, req.body, {
+    const myBeehive = await Beehive.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
+
+    // if Id is grammatical correct but doesn't exist 
+    if (!myBeehive) {
+      return next(new AppError("No Beehive found", 404))
+    }
+
     res.status(200).json({
       status: "success",
       data: beehive,

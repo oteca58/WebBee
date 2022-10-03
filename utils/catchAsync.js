@@ -3,4 +3,3 @@ module.exports = fn => {
       fn(res, req, next).catch(next);
     };
   };
-
