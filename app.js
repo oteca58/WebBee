@@ -1,6 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
-const AppError = require("./app.utils/appError")
+const AppError = require("./app.utils/app.Error")
 const globalErrorHandler = require ("./controllers/errorController")
 
 // We are going to use this route to get a single beehive
