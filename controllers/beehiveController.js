@@ -57,10 +57,10 @@ exports.deleteBeehive = catchAsync(async (req, res, next) => {
       return next(new AppError("No Beehive found", 404))
     }
 
-    res.status(204).json({
+    res.status(200).json({
       status: "success",
+      message: `your beehive with id: ${myBeehive.id}, is deleted.`,
       requestedAt: req.requestTime,
-      data: null,
     });
 });
 
