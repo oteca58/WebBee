@@ -1,9 +1,13 @@
 const Beehive = require("./../models/beehiveModel");
-const catchAsync = require("../app.utils/catchAsync");
-const AppError = require("../app.utils/app.Error");
+const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 
 exports.getAllBeehives = catchAsync(async (req, res, next) => {
     const allBeehives = await Beehive.find(req.query);
+
+    if(!allBeehives){
+      return next(new AppError('no Beehives found with that ID'))
+    };
 
     res.status(200).json({
       status: "success",
@@ -31,9 +35,9 @@ exports.getBeehive = catchAsync(async (req, res, next) => {
     const myBeehive = await Beehive.findById(req.params.id);
 
     // if Id is grammatical correct but doesn't exist 
-    if (!myBeehive) {
-      return next(new AppError("No Beehive found", 404))
-    }
+    if(!myBeehive){
+      return next(new AppError('no Beehives found with that ID'))
+    };
 
     res.status(200).json({
       status: "success",

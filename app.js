@@ -1,6 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
-const AppError = require("./app.utils/app.Error")
+const AppError = require("./utils/appError")
 const globalErrorHandler = require ("./controllers/errorController")
 
 // We are going to use this route to get a single beehive
@@ -17,6 +17,9 @@ const app = express();
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+//error handling middleware 
+app.use(globalErrorHandler);
 
 app.use(express.json());
 app.use(express.static(`${__dirname}/public)`));

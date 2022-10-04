@@ -2,8 +2,8 @@ const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
     error: err,
-    message: err.message,
-    stack: err.stack,
+    message: error.message,
+    stack: error.stack,
   });
 }
 
@@ -12,7 +12,7 @@ const sendErrorProd = (err, res) => {
   if (err.isOperational) {
   res.status(err.statusCode).json({
     status: err.status,
-    message: err.message,
+    message: error.message,
   })
 //unknown error: don't leak error details to the client
 } else {
@@ -33,10 +33,10 @@ module.exports = (err, req, res, next) => {
     //console.log(err.stack) for find all routes errors;
   
     err.statusCode = err.statusCode || 500;
-    err.status = err.status;
+    err.status = err.status || "error";
 
     if (process.env.NODE_ENV === "development") {
-      sendErrorDev(err, res);
+      sendErrorDev = (err, res);
       } else if ((process.env.NODE_ENV === "production")) {
       sendErrorProd(err, res);
     }
