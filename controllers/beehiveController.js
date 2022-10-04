@@ -68,6 +68,7 @@ exports.deleteBeehive = catchAsync(async (req, res, next) => {
 exports.updateBeehive = catchAsync(async (req, res, next) => {
     const myBeehive = await Beehive.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
+      runValidators: true,
     });
 
     // if Id is grammatical correct but doesn't exist 

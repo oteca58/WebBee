@@ -1,18 +1,20 @@
 const sendErrorDev = (err, res) => {
+  console.log("errorDev1", err.status)
   res.status(err.statusCode).json({
     status: err.status,
     error: err,
-    message: error.message,
-    stack: error.stack,
+    message: err.message,
+    stack: err.stack,
   });
 }
 
 const sendErrorProd = (err, res) => {
+  console.log("errorProd", err.status)
   //operational error came from appError.js -- send message to the client
   if (err.isOperational) {
   res.status(err.statusCode).json({
     status: err.status,
-    message: error.message,
+    message: err.message,
   })
 //unknown error: don't leak error details to the client
 } else {
@@ -36,7 +38,7 @@ module.exports = (err, req, res, next) => {
     err.status = err.status || "error";
 
     if (process.env.NODE_ENV === "development") {
-      sendErrorDev = (err, res);
+      sendErrorDev(err, res);
       } else if ((process.env.NODE_ENV === "production")) {
       sendErrorProd(err, res);
     }
