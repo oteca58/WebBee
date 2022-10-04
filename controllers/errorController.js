@@ -1,5 +1,19 @@
+const AppError = require('./../utils/appError');
+
+const handleCastErrorDB = err => {
+  const message = `Invalid ${err.path}: ${err.value}.`;
+  return new AppError(message, 400);
+}
+
+const handleDuplicateFieldsDB = err => {
+  //regex to find the duplicate field.
+  const value = err.message.match(/[^{\}]+(?=})/g);
+  const message = `Error: Duplicate field value: '${value}'. Use another one`;
+  return new AppError(message, 400);
+}
+
 const sendErrorDev = (err, res) => {
-  console.log("errorDev1", err.status)
+  console.log("errorDev1");
   res.status(err.statusCode).json({
     status: err.status,
     error: err,
@@ -9,7 +23,7 @@ const sendErrorDev = (err, res) => {
 }
 
 const sendErrorProd = (err, res) => {
-  console.log("errorProd", err.status)
+  console.log("errorProd");
   //operational error came from appError.js -- send message to the client
   if (err.isOperational) {
   res.status(err.statusCode).json({
@@ -40,6 +54,13 @@ module.exports = (err, req, res, next) => {
     if (process.env.NODE_ENV === "development") {
       sendErrorDev(err, res);
       } else if ((process.env.NODE_ENV === "production")) {
-      sendErrorProd(err, res);
+        
+        let error = err;
+        //name error in postman if the Id isn't correct, pass a function to manage this error
+        if (error.name === "CastError") error = handleCastErrorDB(error);
+        //error for duplicate name with POST method, 11000 is code for duplication
+        if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+
+        sendErrorProd(error, res);
     }
   }
