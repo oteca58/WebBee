@@ -12,6 +12,11 @@ const handleDuplicateFieldsDB = err => {
   return new AppError(message, 400);
 }
 
+const handleValidationErrorDB = err => {
+  const message = `${err.message}`;
+  return new AppError(message, 400);
+}
+
 const sendErrorDev = (err, res) => {
   console.log("errorDev1");
   res.status(err.statusCode).json({
@@ -60,6 +65,8 @@ module.exports = (err, req, res, next) => {
         if (error.name === "CastError") error = handleCastErrorDB(error);
         //error for duplicate name with POST method, 11000 is code for duplication
         if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+        //error for wrong name in PATCH method
+        if (error.name === "ValidationError") error = handleValidationErrorDB(error);
 
         sendErrorProd(error, res);
     }

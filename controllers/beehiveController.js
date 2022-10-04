@@ -65,7 +65,7 @@ exports.deleteBeehive = catchAsync(async (req, res, next) => {
 });
 
 //implementation morgan
-exports.updateBeehive = catchAsync(async (req, res, next) => {
+exports.updateBeehive = catchAsync(async (req, res) => {
     const myBeehive = await Beehive.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -78,6 +78,6 @@ exports.updateBeehive = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      data: beehive,
+      data: myBeehive,
     });
 });
