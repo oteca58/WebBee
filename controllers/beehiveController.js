@@ -52,7 +52,7 @@ exports.getBeehive = catchAsync(async (req, res, next) => {
 exports.deleteBeehive = catchAsync(async (req, res, next) => {
     const myBeehive = await Beehive.findByIdAndDelete(req.params.id);
 
-    // if Id is grammatical correct but doesn't exist 
+    // if ID is grammatical correct but doesn't exist 
     if (!myBeehive) {
       return next(new AppError("No Beehive found", 404))
     }
