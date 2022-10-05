@@ -13,7 +13,7 @@ const app = express();
 
 // 1) MIDDLEWARES
 
-//if environment is development morgan is used
+//if environment is development morgan used
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
