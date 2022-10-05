@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 
-const AppError = require('./app.utils/app.Error')
+const AppError = require('./utils/appError')
 
 
 // We are going to use this route to get a single beehive

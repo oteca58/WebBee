@@ -1,6 +1,6 @@
 const Beekeeper = require("./../models/beekeeperModel");
-const catchAsync = require('../app.utils/catchAsync'); 
-const AppError = require("../app.utils/app.Error");
+const catchAsync = require('../utils/catchAsync'); 
+const AppError = require("../utils/appError");
 
 exports.getAllBeekeepers = catchAsync(async (req, res, next) => {
   const allBeekeepers = await Beekeeper.find(req.query);
