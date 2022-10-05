@@ -1,3 +1,24 @@
+const AppError = require('../utils/appError')
+
+// handleCastelErrorDb, handleDuplicateFieldsrDb, ValidationError
+// to give more sympathetics errors to Mongoose errors
+const handleCastelErrorDb = err => {
+  const message = `Invalid ${err.path}: ${err.value}.`
+  return new AppError(message, 400);
+};
+const handleDuplicateFieldsrDb = err => {
+  const value = err.errmsg.match(/(["'])(\\?.)*?\1/[0]); //errmsg is MongoDBerror'key  
+  const message = `Duplicate  fiel value : ${value} Please use another value!`
+  return new AppError(message, 400);
+}
+
+const handleValidationErrorDb = err => {
+  const errors = Object.values(err.errors).map(el=>el.message);
+
+  const message = `Invalid input data.${errors.join('. ')}`;
+  return new AppError(message, 400);
+
+}
 const sendErrorDev = (err, res)=>{
   res.status(err.statusCode).json({
     status: err.status,
@@ -35,6 +56,14 @@ module.exports = (err, req, res, next)=>{
       sendErrorDev = (err, res);
     }
     else if(processenv.NODE_ENV === 'production'){
-      sendErrorProd(err, res);
+      let error = {...err}
+      //if our error is CastError:
+      if(error.name ==='CastError') error = handleCastelErrorDb(error);
+      //if our error is becouse duplicate value-when the value must be unique-:
+      if(error.code === 11000) handleDuplicateFieldsrDb(error);
+      if(error.name ==='ValidationError') 
+      error = handleValidationErrorDb(error);
+error = 
+      sendErrorProd(error, res);
     }
   };
