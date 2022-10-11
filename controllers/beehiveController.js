@@ -18,7 +18,12 @@ exports.getAllBeehives = catchAsync(async (req, res, next) => {
 });
 
 exports.createBeehive = catchAsync(async (req, res) => {
-  const newBeehive = await Beehive.create(req.body);
+  const newBeehive = await Beehive.create({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm
+  });
 
     res.status(201).json({
       status: "success",
