@@ -6,11 +6,18 @@ const handleCastelErrorDb = err => {
   const message = `Invalid ${err.path}: ${err.value}.`
   return new AppError(message, 400);
 };
-const handleDuplicateFieldsrDb = err => {
-  const value = err.errmsg.match(/(["'])(\\?.)*?\1/[0]); //errmsg is MongoDBerror'key  
-  const message = `Duplicate  fiel value : ${value} Please use another value!`
-  return new AppError(message, 400);
-}
+
+const handleJWTError = () =>
+  new AppError('invalid token, Please log in again, 401');
+
+const handleJWTExpiredError = () =>
+new AppError('your token has expires!  Please log in again', 401)
+const handleDuplicateFieldsrDb = (err) => {
+     const value =   err.errmsg.match(/(["'])(\\?.)*?\1/[0]); //errmsg is MongoDBerror'key  
+     const message = `Duplicate  fiel value : ${value} Please use another value!`
+     return new AppError(message, 400)
+};
+
 
 const handleValidationErrorDb = err => {
   const errors = Object.values(err.errors).map(el=>el.message);
@@ -63,7 +70,8 @@ module.exports = (err, req, res, next)=>{
       if(error.code === 11000) handleDuplicateFieldsrDb(error);
       if(error.name ==='ValidationError') 
       error = handleValidationErrorDb(error);
-error = 
+      if (error.name === 'JsonWebTockenError') error = handleJWTError();
+      if (error.name === 'TokenExpireError') error = handleJWTExpiredError();
       sendErrorProd(error, res);
     }
   };

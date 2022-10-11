@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 });
 
 // 2) ROUTES
-
+app.use("/api/v1/users", beehiveRouter);
 app.use("/api/v1/beekeepers", beekeeperRouter);
 app.use("/api/v1/beehives", beehiveRouter);
 
