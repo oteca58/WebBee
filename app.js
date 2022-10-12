@@ -6,7 +6,7 @@ const globalErrorHandler = require ("./controllers/errorController")
 // We are going to use this route to get a single beehive
 // /api/v1/beekeepers/beekeeper-1/beehives/beehive-1
 
-const beekeeperRouter = require("./routes/userRouter");
+const userRouter = require("./routes/userRouter");
 const beehiveRouter = require("./routes/beehiveRouter");
 
 const app = express();
@@ -26,12 +26,14 @@ app.use(express.static(`${__dirname}/public)`));
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  //console.log(req.headers);
+
   next();
 });
 
 // 2) ROUTES
 
-app.use("/api/v1/users", beekeeperRouter);
+app.use("/api/v1/users", userRouter);
 app.use("/api/v1/beehives", beehiveRouter);
 
 //implements errors

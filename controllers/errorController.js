@@ -3,19 +3,24 @@ const AppError = require('./../utils/appError');
 const handleCastErrorDB = err => {
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
-}
+};
 
 const handleDuplicateFieldsDB = err => {
   //regex to find the duplicate field.
   const value = err.message.match(/[^{\}]+(?=})/g);
   const message = `Error: Duplicate field value: '${value}'. Use another one`;
   return new AppError(message, 400);
-}
+};
 
 const handleValidationErrorDB = err => {
   const message = `${err.message}`;
   return new AppError(message, 400);
-}
+};
+
+const handleJWTError = () => new AppError("Invalid token, log in again!", 401);
+
+const handleTokenExpiredError = () => new AppError("Expired token, log in again!", 401);
+
 
 const sendErrorDev = (err, res) => {
   console.log("errorDev1");
@@ -25,7 +30,7 @@ const sendErrorDev = (err, res) => {
     message: err.message,
     stack: err.stack,
   });
-}
+};
 
 const sendErrorProd = (err, res) => {
   console.log("errorProd");
@@ -47,7 +52,7 @@ const sendErrorProd = (err, res) => {
     message: "something is wrong",
   })
 }
-}
+};
 
 //error handling middleware 
 module.exports = (err, req, res, next) => {
@@ -67,6 +72,8 @@ module.exports = (err, req, res, next) => {
         if (error.code === 11000) error = handleDuplicateFieldsDB(error);
         //error for wrong name in PATCH method
         if (error.name === "ValidationError") error = handleValidationErrorDB(error);
+        if (error.name === "JsonWebTokenError") error = handleJWTError();
+        if (error.name === "TokenExpiredError") error = handleTokenExpiredError();
 
         sendErrorProd(error, res);
     }

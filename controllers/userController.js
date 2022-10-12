@@ -1,26 +1,43 @@
 const Beekeeper = require("./../models/beekeeperModel");
+const User = require("./../models/userModel");
+const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 
-exports.getAllBeekeepers = async (req, res) => {
-  try {
-    const allBeekeeper = await Beekeeper.find();
-    res.status(200).json({
-      status: "success",
-      requestedAt: req.requestTime,
-      results: allBeekeeper.length,
-      data: {
-        allBeekeeper,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: "fail",
-      message: err,
-    });
-  }
-};
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+  const allUsers = await User.find(req.query);
 
-exports.createBeekeeper = async (req, res) => {
-  try {
+  if(!allUsers){
+    return next(new AppError('no Users found with that ID'))
+  };
+
+  res.status(200).json({
+    status: "success",
+    requestedAt: req.requestTime,
+    results: allUsers.length,
+    data: {
+      allUsers,
+    },
+  });
+});
+
+exports.getAllBeekeepers = catchAsync(async (req, res, next) => {
+  const allBeekeepers = await Beekeeper.find(req.query);
+
+  if(!allBeekeepers){
+    return next(new AppError('no Beekeepers found with that ID'))
+  };
+
+  res.status(200).json({
+    status: "success",
+    requestedAt: req.requestTime,
+    results: allBeekeepers.length,
+    data: {
+      allBeekeepers,
+    },
+  });
+});
+
+exports.createBeekeeper = catchAsync(async (req, res, next) => {
     const newBeekeeper = await Beekeeper.create(req.body);
 
     res.status(201).json({
@@ -29,10 +46,4 @@ exports.createBeekeeper = async (req, res) => {
         beekeeper: newBeekeeper,
       },
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err,
-    });
-  }
-};
+});

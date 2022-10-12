@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please, insert your password:"],
         minlenght: 8,
+        select: false
     },
     passwordConfirm: {
         type: String,
@@ -30,7 +31,8 @@ const userSchema = new mongoose.Schema({
           },
           message: "The passwords are incorrect"
         },
-    }
+    },
+    passwordChangedAt: Date
 });
 
 userSchema.pre("save", async function(next) {
@@ -42,7 +44,21 @@ userSchema.pre("save", async function(next) {
   //delete passwordConfirm field
   this.passwordConfirm = undefined;
   next();
-})
+});
+
+//compare if the encripting password is the same of user password 
+userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+  if(this.passwordChangedAt) {
+    console.log("sonoqui");
+    console.log(this.passwordChangedAt, JWTTimestamp);
+  }
+  
+  return false;
+}
 
 const User = mongoose.model("User", userSchema);
 

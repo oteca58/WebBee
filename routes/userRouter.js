@@ -1,16 +1,22 @@
 const express = require("express");
-const beekeeperController = require("../controllers/userController");
+const userController = require("../controllers/userController");
 const authController = require("../controllers/authController");
 
 const router = express.Router();
 
 
 router.post("/signup", authController.signup);
+router.post("/login", authController.login);
 //methods for route /beekeepers
 router
   .route("/")
-  .get(beekeeperController.getAllBeekeepers)
-  .post(beekeeperController.createBeekeeper);
+  .get(authController.protect, userController.getAllUsers);
+  
+
+router
+  .route("/beekeepers")
+  .get(authController.protect, userController.getAllBeekeepers)
+  .post(authController.protect, userController.createBeekeeper);
 
 // Here below the routes that we are going to implement
 
