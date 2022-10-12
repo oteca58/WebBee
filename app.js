@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 // 2) ROUTES
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/beehives", beehiveRouter);
+app.use("/api/v1/users/beehives", beehiveRouter);
 
 //implements errors
 app.all("*", (req, res, next) => {

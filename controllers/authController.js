@@ -69,13 +69,45 @@ exports.protect = catchAsync (async (req, res, next) => {
     const decoded = await util.promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
     //3) check user still exists
-    const freshUser = await User.findById(decoded.id);
-    if(!freshUser) {
-        return next(new AppError("the user belonging to token doesn't exist"));
+    const currentUser = await User.findById(decoded.id);
+    if(!currentUser) {
+        return next(new AppError("the user belonging to token doesn't exist", 401));
     }
 
     //4) check if user changed pass after the token was issued
-    freshUser.changedPasswordAfter(decoded.iat);
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next(new AppError("the password is changed! login in again!", 401))
+    };
 
+    // Grant access to protected route
+    req.user = currentUser;
     next();
+}); 
+
+exports.restrictTo = (...roles) => {
+    return (req, res, next) => {
+        //roles ["admin", "beekeeper"]. role="user"
+        if(!roles.includes(req.user.role)) {
+            return next(new AppError("don't have permission for this", 403));
+        }
+
+        next();
+    };
+};
+
+exports.forgotPassword = catchAsync (async (req, res, next) => {
+    //1) get usedr based on POSTed email
+    const user = await User.findOne({email: req.body.email});
+    if(!user) {
+        return next(new AppError("there isn't user whit email address", 404))
+    }
+    //2) generete the random reset token
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false});
+
+    //3) send it to user's email
+
+
 });
+
+exports.forgotpassword = (req, res, next) => {}

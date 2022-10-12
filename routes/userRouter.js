@@ -7,7 +7,11 @@ const router = express.Router();
 
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
-//methods for route /beekeepers
+
+router.post("/forgotPassword", authController.forgotPassword);
+router.post("/resetPassword", authController.login);
+
+
 router
   .route("/")
   .get(authController.protect, userController.getAllUsers);
@@ -16,7 +20,11 @@ router
 router
   .route("/beekeepers")
   .get(authController.protect, userController.getAllBeekeepers)
-  .post(authController.protect, userController.createBeekeeper);
+
+  router
+  .route("/beekeepers/:id")
+  .post(authController.protect, userController.createBeekeeper)
+  .delete(authController.protect, authController.restrictTo("admin", "beekeeper"), userController.deleteBeekeeper);
 
 // Here below the routes that we are going to implement
 

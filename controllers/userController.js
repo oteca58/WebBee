@@ -47,3 +47,18 @@ exports.createBeekeeper = catchAsync(async (req, res, next) => {
       },
     });
 });
+
+exports.deleteBeekeeper = catchAsync(async (req, res, next) => {
+  const myBeekeeper = await Beekeeper.findByIdAndDelete(req.params.id);
+
+  // if ID is grammatical correct but doesn't exist 
+  if (!myBeekeeper) {
+    return next(new AppError("No Beekeeper found", 404))
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: `your Beekeeper with id: ${myBeekeeper.id}, is deleted.`,
+    requestedAt: req.requestTime,
+  });
+});
