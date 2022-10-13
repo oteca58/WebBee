@@ -1,77 +1,80 @@
-const AppError = require('../utils/appError')
+const AppError = require('./../utils/appError');
 
-// handleCastelErrorDb, handleDuplicateFieldsrDb, ValidationError
-// to give more sympathetics errors to Mongoose errors
-const handleCastelErrorDb = err => {
-  const message = `Invalid ${err.path}: ${err.value}.`
+const handleCastErrorDB = err => {
+  const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
 };
 
-const handleJWTError = () =>
-  new AppError('invalid token, Please log in again, 401');
-
-const handleJWTExpiredError = () =>
-new AppError('your token has expires!  Please log in again', 401)
-const handleDuplicateFieldsrDb = (err) => {
-     const value =   err.errmsg.match(/(["'])(\\?.)*?\1/[0]); //errmsg is MongoDBerror'key  
-     const message = `Duplicate  fiel value : ${value} Please use another value!`
-     return new AppError(message, 400)
+const handleDuplicateFieldsDB = err => {
+  //regex to find the duplicate field.
+  const value = err.message.match(/[^{\}]+(?=})/g);
+  const message = `Error: Duplicate field value: '${value}'. Use another one`;
+  return new AppError(message, 400);
 };
 
-
-const handleValidationErrorDb = err => {
-  const errors = Object.values(err.errors).map(el=>el.message);
-
-  const message = `Invalid input data.${errors.join('. ')}`;
+const handleValidationErrorDB = err => {
+  const message = `${err.message}`;
   return new AppError(message, 400);
+};
 
-}
-const sendErrorDev = (err, res)=>{
+const handleJWTError = () => new AppError("Invalid token, log in again!", 401);
+
+const handleTokenExpiredError = () => new AppError("Expired token, log in again!", 401);
+
+
+const sendErrorDev = (err, res) => {
+  console.log("errorDev1");
   res.status(err.statusCode).json({
     status: err.status,
-    message: error.message,
     error: err,
-    stack: error.stack
+    message: err.message,
+    stack: err.stack,
   });
 };
 
-const sendErrorProd = (err, res)=>{
-  //Operational, trasted error: send message to client
- if(err.isOperational){
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: error.message,
-    });
-    //programming or other unknow error:don't leak to detail
-  }else{
-    //1) Log error
-    console.error('ERROR',err)
-    //2)Send generic message 
-    res.status(500).json({
-      status: 'error',
-      message: 'Someting went wrong!'
-    })
-  }
+const sendErrorProd = (err, res) => {
+  console.log("errorProd");
+  //operational error came from appError.js -- send message to the client
+  if (err.isOperational) {
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+  })
+//unknown error: don't leak error details to the client
+} else {
+  //1) log error
+  console.error("Error", err);
+
+
+  //2) send generic message
+  res.status(500).json({
+    status: "error",
+    message: "something is wrong",
+  })
+}
 };
 
-
-module.exports = (err, req, res, next)=>{
+//error handling middleware 
+module.exports = (err, req, res, next) => {
+    //console.log(err.stack) for find all routes errors;
+  
     err.statusCode = err.statusCode || 500;
-    err.status = err.status || 'error';
-    
-    if(processenv.NODE_ENV === 'develpment'){
-      sendErrorDev = (err, res);
+    err.status = err.status || "error";
+
+    if (process.env.NODE_ENV === "development") {
+      sendErrorDev(err, res);
+      } else if ((process.env.NODE_ENV === "production")) {
+        
+        let error = err;
+        //name error in postman if the Id isn't correct, pass a function to manage this error
+        if (error.name === "CastError") error = handleCastErrorDB(error);
+        //error for duplicate name with POST method, 11000 is code for duplication
+        if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+        //error for wrong name in PATCH method
+        if (error.name === "ValidationError") error = handleValidationErrorDB(error);
+        if (error.name === "JsonWebTokenError") error = handleJWTError();
+        if (error.name === "TokenExpiredError") error = handleTokenExpiredError();
+
+        sendErrorProd(error, res);
     }
-    else if(processenv.NODE_ENV === 'production'){
-      let error = {...err}
-      //if our error is CastError:
-      if(error.name ==='CastError') error = handleCastelErrorDb(error);
-      //if our error is becouse duplicate value-when the value must be unique-:
-      if(error.code === 11000) handleDuplicateFieldsrDb(error);
-      if(error.name ==='ValidationError') 
-      error = handleValidationErrorDb(error);
-      if (error.name === 'JsonWebTockenError') error = handleJWTError();
-      if (error.name === 'TokenExpireError') error = handleJWTExpiredError();
-      sendErrorProd(error, res);
-    }
-  };
+  }

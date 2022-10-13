@@ -1,12 +1,14 @@
 const Beehive = require("./../models/beehiveModel");
-const catchAsync = require('../utils/catchAsync'); 
+const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
 exports.getAllBeehives = catchAsync(async (req, res, next) => {
     const allBeehives = await Beehive.find(req.query);
+
     if(!allBeehives){
       return next(new AppError('no Beehives found with that ID'))
     };
+
     res.status(200).json({
       status: "success",
       requestedAt: req.requestTime,
@@ -17,29 +19,26 @@ exports.getAllBeehives = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.createBeehive = catchAsync(async (req, res) => {
-  const newBeehive = await Beehive.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm
-  });
+
+exports.createBeehive = catchAsync(async (req, res, next) => {
+    const newBeehive = await Beehive.create(req.body);
 
     res.status(201).json({
       status: "success",
       data: {
         beekeeper: newBeehive,
       },
-    });
-  
+});
 });
 
 exports.getBeehive = catchAsync(async (req, res, next) => {
-  
     const myBeehive = await Beehive.findById(req.params.id);
+
+    // if Id is grammatical correct but doesn't exist 
     if(!myBeehive){
       return next(new AppError('no Beehives found with that ID'))
     };
+
     res.status(200).json({
       status: "success",
       requestedAt: req.requestTime,
@@ -51,30 +50,34 @@ exports.getBeehive = catchAsync(async (req, res, next) => {
 
 //Insert message to header/response : deleted beehive
 exports.deleteBeehive = catchAsync(async (req, res, next) => {
-  
-    const beehive =  await Beehive.findByIdAndDelete(req.params.id);
-    if(!beehive){
-      return next(new AppError('no Beehives found with that ID'))
-    };
-    res.status(204).json({
-      status: "success",
-      requestedAt: req.requestTime,
-      data: null,
-    });
-});
-  
+    const myBeehive = await Beehive.findByIdAndDelete(req.params.id);
 
-//implementation morgan
-exports.updateBeehive = catchAsync(async (req, res, next) => {
-    const beehive = await Beehive.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true  // Update validators validate the update operation against the model's schema
-    });
-    if(!beehive){
-      return next(new AppError('no Beehives found with that ID'))
-    };
+    // if ID is grammatical correct but doesn't exist 
+    if (!myBeehive) {
+      return next(new AppError("No Beehive found", 404))
+    }
+
     res.status(200).json({
       status: "success",
-      data: beehive,
+      message: `your beehive with id: ${myBeehive.id}, is deleted.`,
+      requestedAt: req.requestTime,
+    });
+});
+
+//implementation morgan
+exports.updateBeehive = catchAsync(async (req, res) => {
+    const myBeehive = await Beehive.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    // if Id is grammatical correct but doesn't exist 
+    if (!myBeehive) {
+      return next(new AppError("No Beehive found", 404))
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: myBeehive,
     });
 });
