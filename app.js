@@ -1,13 +1,11 @@
 const express = require("express");
 const morgan = require("morgan");
-const AppError = require("./utils/appError")
-const globalErrorHandler = require ("./controllers/errorController")
-
-// We are going to use this route to get a single beehive
-// /api/v1/beekeepers/beekeeper-1/beehives/beehive-1
-
+const AppError = require("./utils/appError");
+const globalErrorHandler = require("./controllers/errorController");
 const userRouter = require("./routes/userRouter");
-const beehiveRouter = require("./routes/beehiveRouter");
+const beekeeperRouter = require("./routes/beekeeperRouter");
+const beeadopterRouter = require("./routes/beeadopterRouter");
+const adminRouter = require("./routes/adminRouter");
 
 const app = express();
 
@@ -18,7 +16,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-//error handling middleware 
+//error handling middleware
 app.use(globalErrorHandler);
 
 app.use(express.json());
@@ -34,7 +32,9 @@ app.use((req, res, next) => {
 // 2) ROUTES
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/users/beehives", beehiveRouter);
+app.use("/api/v1/users/beekeepers", beekeeperRouter);
+app.use("/api/v1/users/beeadopters", beeadopterRouter);
+app.use("/api/v1/users/beehives", adminRouter);
 
 //implements errors
 app.all("*", (req, res, next) => {
@@ -44,9 +44,9 @@ app.all("*", (req, res, next) => {
   // err.code = 404;
 
   next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
-})
+});
 
-//error handling middleware 
+//error handling middleware
 app.use(globalErrorHandler);
 
 module.exports = app;

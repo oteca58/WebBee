@@ -9,9 +9,16 @@ const beehiveSchema = new mongoose.Schema({
     required: true,
   },
   serial_beekeeper: {
+    //need to have beekeeper ID
     type: Number,
     unique: true,
     required: true,
+  },
+  ////implement 1o1 connection with beeAdopter
+  serial_beeadopter: {
+    //need to have beekeeper ID
+    type: Number,
+    unique: true,
   },
   place: {
     type: String,
