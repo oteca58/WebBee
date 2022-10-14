@@ -31,10 +31,13 @@ app.use((req, res, next) => {
 
 // 2) ROUTES
 
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/users/beekeepers", beekeeperRouter);
-app.use("/api/v1/users/beeadopters", beeadopterRouter);
-app.use("/api/v1/users/beehives", adminRouter);
+// app.use("/api/v1/users", userRouter);
+// app.use("/api/v1/users/beekeepers", beekeeperRouter);
+// app.use("/api/v1/users/beeadopters", beeadopterRouter);
+// app.use("/api/v1/users/beehives", adminRouter);
+
+app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/user", userRouter);
 
 //implements errors
 app.all("*", (req, res, next) => {

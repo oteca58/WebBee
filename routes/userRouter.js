@@ -9,6 +9,9 @@ router.post("/login", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
 router.post("/resetPassword", authController.login);
 
-router.route("/").get(authController.protect, userController.getAllUsers);
+// router
+//   .route("/:id") implement methods
+
+router.route("/:id").get(authController.protect, beehiveController.getBeehive);
 
 module.exports = router;

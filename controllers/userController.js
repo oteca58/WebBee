@@ -6,9 +6,9 @@ const AppError = require("../utils/appError");
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const allUsers = await User.find(req.query);
 
-  if(!allUsers){
-    return next(new AppError('no Users found with that ID'))
-  };
+  if (!allUsers) {
+    return next(new AppError("no Users found with that ID"));
+  }
 
   res.status(200).json({
     status: "success",
@@ -19,3 +19,5 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+//delete and updated and getUserById user to be implemented
