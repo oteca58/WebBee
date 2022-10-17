@@ -37,9 +37,9 @@ const userSchema = new mongoose.Schema({
       message: "The passwords are incorrect",
     },
   },
-  passwordChangedAt: { type: Date, default: Date.now },
-  passwordResetToken: { type: String, default: "" },
-  passwordResetExpires: { type: Date, default: Date.now },
+  passwordChangedAt: { type: Date, default: Date.now, select: false},
+  passwordResetToken: { type: String, default: "", select: false},
+  passwordResetExpires: { type: Date, default: Date.now, select: false},
   beehives: [{ type: mongoose.Schema.ObjectId, ref: "Beehive" }],
 });
 
