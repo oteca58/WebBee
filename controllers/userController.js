@@ -4,8 +4,6 @@ const AppError = require("../utils/appError");
 const { resetPassword } = require("./authController");
 const APIFeatures = require("./../utils/apiFeatures");
 
-
-
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   //execute query
   const features = new APIFeatures(User.find(), req.query)

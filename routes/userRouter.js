@@ -7,7 +7,7 @@ router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 
 router.post("/forgotPassword", authController.forgotPassword);
-router.post("/resetPassword", authController.login);
+router.post("/resetPassword/:token", authController.resetPassword);
 
 
 router.route("/:id").get(authController.protect, beehiveController.getBeehive);
