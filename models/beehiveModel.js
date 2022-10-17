@@ -9,9 +9,14 @@ const beehiveSchema = new mongoose.Schema({
     required: true,
   },
   serial_beekeeper: {
+    //need to have beekeeper ID
     type: Number,
     unique: true,
     required: true,
+  },
+  beeadopter: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   place: {
     type: String,
@@ -53,6 +58,13 @@ const beehiveSchema = new mongoose.Schema({
     type: Number,
     required: [true, "a beehive must have a price"],
   },
+});
+
+beehiveSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "beeadopter",
+  });
+  next();
 });
 
 const Beehive = mongoose.model("Beehive", beehiveSchema);

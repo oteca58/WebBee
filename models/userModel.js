@@ -1,51 +1,51 @@
-const crypto = require ("crypto");
+const crypto = require("crypto");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Insert your name:"]
+    required: [true, "Insert your name:"],
   },
   email: {
-      type: String,
-      required: [true, "Insert your email:"],
-      unique: true,
-      lowercase: true,
-      validation: [validator.isEmail, "Enter a valid Email"]
-    },
+    type: String,
+    required: [true, "Insert your email:"],
+    unique: true,
+    lowercase: true,
+    validation: [validator.isEmail, "Enter a valid Email"],
+  },
   role: {
     type: String,
-    enum: ["user", "admin", "beekeeper"],
-    default: "user"
+    enum: ["beeadopter", "admin", "beekeeper"],
+    default: "beeadopter",
   },
   password: {
-      type: String,
-      required: [true, "Please, insert your password:"],
-      minlenght: 8,
-      select: false
+    type: String,
+    required: [true, "Please, insert your password:"],
+    minlenght: 8,
+    select: false,
   },
   passwordConfirm: {
-      type: String,
-      required: [true, "Please, confirm your password:"],
-      validate: {
-        //this only word on SAVE, el===password in data
-        validator: function(el) {
-          return el === this.password; //password1 === password2
-        },
-        message: "The passwords are incorrect"
+    type: String,
+    required: [true, "Please, confirm your password:"],
+    validate: {
+      //this only word on SAVE, el===password in data
+      validator: function (el) {
+        return el === this.password; //password1 === password2
       },
+      message: "The passwords are incorrect",
+    },
   },
-  passwordChangedAt: { type: Date, default: Date.now },
-  passwordResetToken: { type: String, default: "" },
-  passwordResetExpires: { type: Date, default: Date.now }
+  passwordChangedAt: { type: Date, default: Date.now, select: false},
+  passwordResetToken: { type: String, default: "", select: false},
+  passwordResetExpires: { type: Date, default: Date.now, select: false},
+  beehives: [{ type: mongoose.Schema.ObjectId, ref: "Beehive" }],
 });
 
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
   //run this only if the password is modify
-  if(!this.isModified("password")) return next();
+  if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
 
@@ -54,24 +54,30 @@ userSchema.pre("save", async function(next) {
   next();
 });
 
-//compare if the encripting password is the same of user password 
-userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
+//compare if the encripting password is the same of user password
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
-  if(this.passwordChangedAt) {
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
     //confert data in seconds
-    const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
 
     return JWTTimestamp < changedTimestamp;
   }
-  
+
   //false means NOT  changed
   return false;
 };
 
-userSchema.methods.createPasswordResetToken = function() {
+userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
 
   this.passwordResetToken = crypto
@@ -79,12 +85,22 @@ userSchema.methods.createPasswordResetToken = function() {
     .update(resetToken)
     .digest("hex");
 
-    console.log({resetToken}, this.passwordResetToken);
+  console.log({ resetToken }, this.passwordResetToken);
 
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;//10 min
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 min
 
   return resetToken;
 };
+
+// QUERY MIDDLEWARE
+//populate the beehives id's inside the beehive's field of beekeeper model
+
+userSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "beehives",
+  });
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 

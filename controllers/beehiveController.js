@@ -81,3 +81,5 @@ exports.updateBeehive = catchAsync(async (req, res) => {
       data: myBeehive,
     });
 });
+
+//implement get all my beehives by id
