@@ -54,6 +54,14 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.pre("save", function(next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  //this method (- 1000) to skip some problem if the token is created a little bit early
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+})
+
 //compare if the encripting password is the same of user password
 userSchema.methods.correctPassword = async function (
   candidatePassword,
