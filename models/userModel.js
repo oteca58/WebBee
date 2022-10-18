@@ -40,7 +40,10 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: { type: Date, default: Date.now, select: false},
   passwordResetToken: { type: String, default: "", select: false},
   passwordResetExpires: { type: Date, default: Date.now, select: false},
-  beehives: [{ type: mongoose.Schema.ObjectId, ref: "Beehive" }],
+  beehives: [{ 
+      type: mongoose.Schema.ObjectId, 
+      ref: "Beehive" 
+    }],
 });
 
 userSchema.pre("save", async function (next) {

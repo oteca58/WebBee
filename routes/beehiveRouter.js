@@ -1,7 +1,7 @@
 const express = require("express");
 const authController = require("../controllers/authController");
-const beehiveController = require("./../controllers/beehiveController");
-const userController = require("./../controllers/userController");
+const beehiveController = require("../controllers/beehiveController");
+const userController = require("../controllers/userController");
 const router = express.Router();
 
 router
@@ -13,7 +13,7 @@ router
   )
   .post(
     authController.protect,
-    authController.restrictTo("admin"),
+    authController.restrictTo("beekeeper", "admin"),
     beehiveController.createBeehive
   );
 

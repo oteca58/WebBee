@@ -14,8 +14,6 @@ router.patch("/updateMyPassword", authController.protect, authController.updateP
 router.patch("/updateMe", authController.protect, userController.updateMe);
 
 
-
-
-router.route("/:id").get(authController.protect, beehiveController.getBeehive);
+router.route("/user/:id").get(authController.protect, userController.getUser);
 
 module.exports = router;

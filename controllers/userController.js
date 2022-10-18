@@ -65,4 +65,24 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getUser = catchAsync(async (req, res, next) => {
+  const myUser = await User.findById(req.params.id).populate({
+    path: "beehives",
+    select: "-__v"
+  });
+
+  // if Id is grammatical correct but doesn't exist 
+  if(!myUser){
+    return next(new AppError('no Users found with that ID'))
+  };
+
+  res.status(200).json({
+    status: "success",
+    requestedAt: req.requestTime,
+    data: {
+      myUser,
+    },
+  });
+});
+
 //delete and updated and getUserById user to be implemented
