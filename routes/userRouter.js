@@ -12,20 +12,21 @@ router.post("/login", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
 
-router.patch("/updateMyPassword", authController.protect, authController.updatePassword);
+router.patch(
+  "/updateMyPassword",
+  authController.protect,
+  authController.updatePassword
+);
 router.patch("/updateMe", authController.protect, userController.updateMe);
 
-router
-  .route("/:id")
-  .get(authController.protect, userController.getUser);
+router.route("/:id").get(authController.protect, userController.getUser);
 
 router
-  .route("/getAll")
+  .route("/getAll/test")
   .get(
     authController.protect,
     authController.restrictTo("admin"),
     userController.getAllUsers
   );
-
 
 module.exports = router;
