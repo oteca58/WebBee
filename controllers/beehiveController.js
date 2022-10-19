@@ -3,31 +3,36 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
 exports.getAllBeehives = catchAsync(async (req, res, next) => {
-    const allBeehives = await Beehive.find(req.query);
+  let filter = {};
+  if (req.params.userId) filter = {serial_beekeeper: req.params.userId};
+  console.log(filter);
+  const allBeehives = await Beehive.find(filter);
 
-    if(!allBeehives){
-      return next(new AppError('no Beehives found with that ID'))
-    };
+  if(!allBeehives){
+    return next(new AppError('no Beehives found with that ID'))
+  };
 
-    res.status(200).json({
-      status: "success",
-      requestedAt: req.requestTime,
-      results: allBeehives.length,
-      data: {
-        allBeehives,
-      },
-    });
+  res.status(200).json({
+    status: "success",
+    requestedAt: req.requestTime,
+    results: allBeehives.length,
+    data: {
+      allBeehives,
+    },
+  });
 });
 
 
 exports.createBeehive = catchAsync(async (req, res, next) => {
-    const newBeehive = await Beehive.create(req.body);
+  //Allow nested routes
+  if(!req.body.serial_beekeeper) req.body.serial_beekeeper = req.params.userId;
+  const newBeehive = await Beehive.create(req.body);
 
-    res.status(201).json({
-      status: "success",
-      data: {
-        beekeeper: newBeehive,
-      },
+  res.status(201).json({
+    status: "success",
+    data: {
+      beehives: [newBeehive],
+    },
 });
 });
 

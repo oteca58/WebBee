@@ -130,5 +130,5 @@ dist
 .pnp.*
 
 # custom files
-
+/models/ratingBeehiveModel.js
 /config/config.env

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-//const User = require("./userModel");
-//const slugify = require("slugify");
+const User = require("./userModel");
+const slugify = require("slugify");
 
 //schema for beehive
 const beehiveSchema = new mongoose.Schema({
@@ -9,7 +9,7 @@ const beehiveSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  beekeeper:
+  serial_beekeeper:
     {
       type: mongoose.Schema.ObjectId,
       ref: "User",
@@ -59,12 +59,20 @@ const beehiveSchema = new mongoose.Schema({
     type: Number,
     required: [true, "a beehive must have a price"],
   },
-});
+},
+{
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+}
+);
 
 beehiveSchema.pre(/^find/, function (next) {
   this.populate({
-    path: "beeadopter beekeeper",
-    select: "-__v -beehives"
+    path: "serial_beekeeper",
+    select: "-__v -email -role"
+    }).populate({
+      path: "beeadopter",
+      select: "-__v"
     });
   next();
 }); 

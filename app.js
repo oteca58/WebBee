@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 // app.use("/api/v1/users/beeadopters", beeadopterRouter);
 // app.use("/api/v1/users/beehives", adminRouter);
 
-app.use("/api/v1/:role", beehiveRouter);
+app.use("/api/v1/try", beehiveRouter);
 app.use("/api/v1/users", userRouter);
 
 //implements errors

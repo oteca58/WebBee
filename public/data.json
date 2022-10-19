@@ -4,7 +4,7 @@
     "beekeeper": "Angelo",
     "beehives": [
       {
-        "serial_beekeeper": 1,
+        "beekeeper": 1,
         "place": "udine",
         "state": "production",
         "honeycomb": 1,

@@ -1,8 +1,10 @@
 const express = require("express");
-const beehiveController = require("../controllers/beehiveController");
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
+const beehiveRouter = require("./beehiveRouter");
 const router = express.Router();
+
+router.use("/bee/:userId", beehiveRouter);
 
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
@@ -13,7 +15,17 @@ router.patch("/resetPassword/:token", authController.resetPassword);
 router.patch("/updateMyPassword", authController.protect, authController.updatePassword);
 router.patch("/updateMe", authController.protect, userController.updateMe);
 
+router
+  .route("/:id")
+  .get(authController.protect, userController.getUser);
 
-router.route("/user/:id").get(authController.protect, userController.getUser);
+router
+  .route("/getAll")
+  .get(
+    authController.protect,
+    authController.restrictTo("admin"),
+    userController.getAllUsers
+  );
+
 
 module.exports = router;

@@ -2,6 +2,8 @@ const crypto = require("crypto");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
+const Beehive = require("./beehiveModel");
+const slugify = require("slugify");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -37,13 +39,21 @@ const userSchema = new mongoose.Schema({
       message: "The passwords are incorrect",
     },
   },
-  passwordChangedAt: { type: Date, default: Date.now, select: false},
-  passwordResetToken: { type: String, default: "", select: false},
-  passwordResetExpires: { type: Date, default: Date.now, select: false},
-  beehives: [{ 
-      type: mongoose.Schema.ObjectId, 
-      ref: "Beehive" 
-    }],
+  passwordChangedAt: {type: Date},
+  passwordResetToken: { type: String},
+  passwordResetExpires: { type: Date},
+},
+{
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+}
+);
+
+//populate virtual myBeehives
+userSchema.virtual("beehives", {
+  ref: "Beehive",
+  foreignField: "serial_beekeeper",
+  localField: "_id"
 });
 
 userSchema.pre("save", async function (next) {
@@ -56,6 +66,7 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
 
 userSchema.pre("save", function(next) {
   if (!this.isModified("password") || this.isNew) return next();
@@ -106,12 +117,13 @@ userSchema.methods.createPasswordResetToken = function () {
 // QUERY MIDDLEWARE
 //populate the beehives id's inside the beehive's field of beekeeper model
 
-userSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "beehives",
-  });
-  next();
-});
+// userSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     localField: "beehives",
+//     foreignField: "serial_beekeer",
+//   });
+//   next();
+// });
 
 const User = mongoose.model("User", userSchema);
 
