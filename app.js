@@ -3,7 +3,7 @@ const morgan = require("morgan");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const userRouter = require("./routes/userRouter");
-const adminRouter = require("./routes/adminRouter");
+const beehiveRouter = require("./routes/beehiveRouter");
 
 const app = express();
 
@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 // app.use("/api/v1/users/beeadopters", beeadopterRouter);
 // app.use("/api/v1/users/beehives", adminRouter);
 
-app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/try", beehiveRouter);
 app.use("/api/v1/users", userRouter);
 
 //implements errors

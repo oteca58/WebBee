@@ -21,6 +21,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     .limitFields()
     .paginate()
   const allUsers = await features.query;
+  console.log(allUsers);
 
   if (!allUsers) {
     return next(new AppError("no Users found with that ID"));
@@ -62,6 +63,26 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     data: {
       user: updatedUser
     }
+  });
+});
+
+exports.getUser = catchAsync(async (req, res, next) => {
+  const myUser = await User.findById(req.params.id).populate({
+    path: "beehives",
+    select: "-__v -price -state -honeycomb -propolis_net -pollin_trap"
+  });
+
+  // if Id is grammatical correct but doesn't exist 
+  if(!myUser){
+    return next(new AppError('no Users found with that ID'))
+  };
+
+  res.status(200).json({
+    status: "success",
+    requestedAt: req.requestTime,
+    data: {
+      myUser,
+    },
   });
 });
 

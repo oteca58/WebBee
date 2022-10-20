@@ -41,7 +41,12 @@ exports.signup = catchAsync(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm
+    passwordConfirm: req.body.passwordConfirm,
+    role: req.body.role,
+    passwordChangedAt: req.body.passwordChangedAt,
+    passwordResetToken: req.body.passwordResetToken,
+    passwordResetExpires: req.body.passwordResetExpires,
+    _id: req.body._id,
   });
 
   createSendToken(newUser, 201, res);
@@ -105,6 +110,7 @@ exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     //roles ["admin", "beekeeper"]. role="user"
     if (!roles.includes(req.user.role)) {
+      console.log(req.user.role);
       return next(new AppError("don't have permission for this", 403));
     }
 

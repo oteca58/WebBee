@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-//const slugify = require("slugify");
+const User = require("./userModel");
+const slugify = require("slugify");
 
 //schema for beehive
 const beehiveSchema = new mongoose.Schema({
@@ -8,12 +9,12 @@ const beehiveSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  serial_beekeeper: {
-    //need to have beekeeper ID
-    type: Number,
-    unique: true,
-    required: true,
-  },
+  serial_beekeeper:
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: true,
+    },
   beeadopter: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -58,14 +59,34 @@ const beehiveSchema = new mongoose.Schema({
     type: Number,
     required: [true, "a beehive must have a price"],
   },
-});
+},
+{
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+}
+);
 
 beehiveSchema.pre(/^find/, function (next) {
   this.populate({
-    path: "beeadopter",
-  });
+    path: "serial_beekeeper",
+    select: "-__v -email -role"
+    }).populate({
+      path: "beeadopter",
+      select: "-__v"
+    });
   next();
-});
+}); 
+
+
+
+//implement beekeeper ID in beehive
+// beehiveSchema.pre("save", async function(next) {
+//   const beekeeperPromises = this.beekeeper.map(async id => await User.findById(id));
+//   this.beekeeper = await Promise.all(beekeeperPromises)
+//   next();
+// });
+
+
 
 const Beehive = mongoose.model("Beehive", beehiveSchema);
 
