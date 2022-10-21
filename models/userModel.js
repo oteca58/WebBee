@@ -42,6 +42,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: {type: Date},
   passwordResetToken: { type: String},
   passwordResetExpires: { type: Date},
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  }
 },
 {
   toJSON: { virtuals: true },
@@ -74,7 +79,14 @@ userSchema.pre("save", function(next) {
   //this method (- 1000) to skip some problem if the token is created a little bit early
   this.passwordChangedAt = Date.now() - 1000;
   next();
-})
+});
+
+//regex (/^=find/ = starts with find)
+userSchema.pre(/^find/, function(next) {
+  //this point to the current query and $ne= not equal to
+  this.find({ active: {$ne: false} });
+  next();
+});
 
 //compare if the encripting password is the same of user password
 userSchema.methods.correctPassword = async function (

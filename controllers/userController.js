@@ -1,8 +1,9 @@
 const User = require("./../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const { resetPassword } = require("./authController");
-const APIFeatures = require("./../utils/apiFeatures");
+const factory = require("./handlerFactory");
+//const { resetPassword } = require("./authController");
+
 
 //loop the obj
 const filterObj = (obj, ...allowedFields) => {
@@ -12,31 +13,6 @@ const filterObj = (obj, ...allowedFields) => {
   });
   return newObj;
 }; 
-
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  //execute query
-  const features = new APIFeatures(User.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate()
-  const allUsers = await features.query;
-  console.log(allUsers);
-
-  if (!allUsers) {
-    return next(new AppError("no Users found with that ID"));
-  }
-
-  //send response
-  res.status(200).json({
-    status: "success",
-    requestedAt: req.requestTime,
-    results: allUsers.length,
-    data: {
-      allUsers,
-    },
-  });
-});
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
@@ -66,24 +42,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUser = catchAsync(async (req, res, next) => {
-  const myUser = await User.findById(req.params.id).populate({
-    path: "beehives",
-    select: "-__v -price -state -honeycomb -propolis_net -pollin_trap"
-  });
+exports.deleteMe = catchAsync (async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false })
 
-  // if Id is grammatical correct but doesn't exist 
-  if(!myUser){
-    return next(new AppError('no Users found with that ID'))
-  };
-
-  res.status(200).json({
+  res.status(204).json({
     status: "success",
-    requestedAt: req.requestTime,
-    data: {
-      myUser,
-    },
+    data: null 
   });
 });
 
-//delete and updated and getUserById user to be implemented
+exports.getAllUsers = factory.getAll(User);
+exports.getUser = factory.getOne(User, { path: "beehives", select : "-__v -price -state -honeycomb -propolis_net -pollin_trap" });
+exports.deleteUser = factory.deleteOne(User);
+exports.updateUser = factory.updateOne(User);
