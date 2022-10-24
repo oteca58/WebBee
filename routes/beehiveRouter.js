@@ -5,14 +5,9 @@ const userController = require("../controllers/userController");
 
 const router = express.Router({ mergeParams: true });
 
-
-
 router
   .route("/beehives")
-  .get(
-    authController.protect,
-    beehiveController.getAllBeehives
-  )
+  .get(authController.protect, beehiveController.getAllBeehives)
   .post(
     authController.protect,
     authController.restrictTo("beekeeper", "admin"),
@@ -37,18 +32,28 @@ router
     beehiveController.deleteBeehive
   );
 
-
 router
   .route("/:userId/mybeehives")
-  .get(
-    authController.protect,
-    beehiveController.getAllBeehives
-  )
+  .get(authController.protect, beehiveController.getAllBeehives)
   .post(
-    authController.protect, 
-    authController.restrictTo("beekeeper", "admin"), 
+    authController.protect,
+    authController.restrictTo("beekeeper", "admin"),
     beehiveController.setBeehiveBeekeeperId,
-    beehiveController.createBeehive);
+    beehiveController.createBeehive
+  );
 
+router
+  .route("/:userId/mybeehives/:id")
+  .get(authController.protect, beehiveController.getBeehive)
+  .patch(
+    authController.protect,
+    beehiveController.setUpdatefromRole,
+    beehiveController.updateBeehive
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo("beekeeper"),
+    beehiveController.deleteBeehive
+  );
 
 module.exports = router;

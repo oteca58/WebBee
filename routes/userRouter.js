@@ -24,15 +24,19 @@ router.delete("/deleteMe", authController.protect, userController.deleteMe);
 router
   .route("/:id")
   .get(authController.protect, userController.getUser)
-  .patch(authController.protect, authController.restrictTo("admin"), userController.updateUser)
-  .delete(authController.protect, authController.restrictTo("admin"), userController.deleteUser);
-
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin"),
+    userController.updateUser
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo("admin"),
+    userController.deleteUser
+  );
 
 router
   .route("/getAll/test")
-  .get(
-    authController.protect,
-    userController.getAllUsers
-  );
+  .get(authController.protect, userController.getAllUsers);
 
 module.exports = router;

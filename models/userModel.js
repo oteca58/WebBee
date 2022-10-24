@@ -5,60 +5,61 @@ const mongoose = require("mongoose");
 const Beehive = require("./beehiveModel");
 const slugify = require("slugify");
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Insert your name:"],
-  },
-  email: {
-    type: String,
-    required: [true, "Insert your email:"],
-    unique: true,
-    lowercase: true,
-    validation: [validator.isEmail, "Enter a valid Email"],
-  },
-  role: {
-    type: String,
-    enum: ["beeadopter", "admin", "beekeeper"],
-    default: "beeadopter",
-  },
-  password: {
-    type: String,
-    required: [true, "Please, insert your password:"],
-    minlenght: 8,
-    select: false,
-  },
-  passwordConfirm: {
-    type: String,
-    required: [true, "Please, confirm your password:"],
-    validate: {
-      //this only word on SAVE, el===password in data
-      validator: function (el) {
-        return el === this.password; //password1 === password2
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Insert your name:"],
+    },
+    email: {
+      type: String,
+      required: [true, "Insert your email:"],
+      unique: true,
+      lowercase: true,
+      validation: [validator.isEmail, "Enter a valid Email"],
+    },
+    role: {
+      type: String,
+      enum: ["beeadopter", "admin", "beekeeper"],
+      default: "beeadopter",
+    },
+    password: {
+      type: String,
+      required: [true, "Please, insert your password:"],
+      minlenght: 8,
+      select: false,
+    },
+    passwordConfirm: {
+      type: String,
+      required: [true, "Please, confirm your password:"],
+      validate: {
+        //this only word on SAVE, el===password in data
+        validator: function (el) {
+          return el === this.password; //password1 === password2
+        },
+        message: "The passwords are incorrect",
       },
-      message: "The passwords are incorrect",
+    },
+    passwordChangedAt: { type: Date },
+    passwordResetToken: { type: String },
+    passwordResetExpires: { type: Date },
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
     },
   },
-  passwordChangedAt: {type: Date},
-  passwordResetToken: { type: String},
-  passwordResetExpires: { type: Date},
-  active: {
-    type: Boolean,
-    default: true,
-    select: false,
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
-},
-{
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-}
 );
 
 //populate virtual myBeehives
 userSchema.virtual("beehives", {
   ref: "Beehive",
   foreignField: "serial_beekeeper",
-  localField: "_id"
+  localField: "_id",
 });
 
 userSchema.pre("save", async function (next) {
@@ -72,8 +73,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-
-userSchema.pre("save", function(next) {
+userSchema.pre("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
 
   //this method (- 1000) to skip some problem if the token is created a little bit early
@@ -82,9 +82,9 @@ userSchema.pre("save", function(next) {
 });
 
 //regex (/^=find/ = starts with find)
-userSchema.pre(/^find/, function(next) {
+userSchema.pre(/^find/, function (next) {
   //this point to the current query and $ne= not equal to
-  this.find({ active: {$ne: false} });
+  this.find({ active: { $ne: false } });
   next();
 });
 
