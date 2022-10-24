@@ -44,7 +44,11 @@ router
     authController.protect,
     beehiveController.getAllBeehives
   )
-  .post(authController.protect, authController.restrictTo("beekeeper", "admin"), beehiveController.createBeehive);
+  .post(
+    authController.protect, 
+    authController.restrictTo("beekeeper", "admin"), 
+    beehiveController.setBeehiveBeekeeperId,
+    beehiveController.createBeehive);
 
 
 module.exports = router;
