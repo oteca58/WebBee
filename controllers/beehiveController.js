@@ -25,7 +25,7 @@ exports.setUpdatefromRole = async (req, res, next) => {
       });
     }
   } else if (doc.role === "beeadopter") {
-    if (req.body.beeadopter) {
+    if (req.body.beeadopter && Object.keys(req.body).length === 1) {
       next();
     } else {
       res.status(401).json({
