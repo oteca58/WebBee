@@ -12,8 +12,8 @@ exports.setBeehiveBeekeeperId = (req, res, next) => {
 };
 
 exports.setUpdatefromRole = async (req, res, next) => {
-  let query = User.findById(req.params.userId);
-  const doc = await query;
+  let query1 = User.findById(req.params.userId);
+  const doc = await query1;
 
   if (doc.role === "beekeeper") {
     if (!req.body.beeadopter) {

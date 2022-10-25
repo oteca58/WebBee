@@ -22,8 +22,8 @@ router.patch("/updateMe", authController.protect, userController.updateMe);
 router.delete("/deleteMe", authController.protect, userController.deleteMe);
 
 router
-  .route("/:id")
-  .get(authController.protect, userController.getUser)
+  .route("/:userId")
+  .get(authController.protect, userController.getMe, userController.getUser)
   .patch(
     authController.protect,
     authController.restrictTo("admin"),

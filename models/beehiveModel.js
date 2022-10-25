@@ -18,6 +18,7 @@ const beehiveSchema = new mongoose.Schema(
     beeadopter: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      default: {},
     },
     place: {
       type: String,
