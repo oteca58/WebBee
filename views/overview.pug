@@ -1,0 +1,45 @@
+extends base 
+
+block content
+    main.main
+    .card-container
+    
+      each beehive in beehives
+        .card
+          .card__header
+            .card__picture
+              .card__picture-overlay &nbsp;
+              img.card__picture-img(src=`img/beehives/${beehive.imageCover}`, alt=`${beehive.place}`)
+            h3.heading-tertirary
+              span= beehive.place
+
+          .card__details
+            h4.card__sub-heading= `state: ${beehive.state}`
+            p.card__text= `pollin trap: ${beehive.pollin_trap}`
+            .card__data
+              svg.card__icon
+                use(xlink:href='/img/icons.svg#icon-map-pin')
+              span= `propolis net: ${beehive.propolis_net}`
+            .card__data
+              svg.card__icon
+                use(xlink:href='/img/icons.svg#icon-calendar')
+              span= `beeadopter: ${beehive.beeadopter}`
+            .card__data
+              svg.card__icon
+                use(xlink:href='/img/icons.svg#icon-flag')
+              span= `honeycomb: ${beehive.honeycomb}`
+            .card__data
+              svg.card__icon
+                use(xlink:href='/img/icons.svg#icon-user')
+              span= `beekeeper: ${beehive.serial_beekeeper.name}` 
+
+          .card__footer
+            p
+              span.card__footer-value= `price: ${beehive.price}`
+              | 
+              span.card__footer-text each person
+            p.card__ratings
+              span.card__footer-value 4.9
+              | 
+              span.card__footer-text rating (15)
+            a.btn.btn--green.btn--small(href=`/beehive/${beehive._id}`) See More

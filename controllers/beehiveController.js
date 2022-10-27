@@ -25,6 +25,7 @@ exports.setUpdatefromRole = async (req, res, next) => {
       });
     }
   } else if (doc.role === "beeadopter") {
+    //beeadopter can't changes others field
     if (req.body.beeadopter && Object.keys(req.body).length === 1) {
       next();
     } else {

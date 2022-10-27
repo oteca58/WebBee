@@ -16,11 +16,7 @@ router
 
 router
   .route("/:id")
-  .get(
-    authController.protect,
-    authController.restrictTo("admin"),
-    beehiveController.getBeehive
-  )
+  .get(authController.protect, beehiveController.getBeehive)
   .patch(
     authController.protect,
     authController.restrictTo("admin"),

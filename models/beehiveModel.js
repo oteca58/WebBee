@@ -13,12 +13,14 @@ const beehiveSchema = new mongoose.Schema(
     serial_beekeeper: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      required: true,
     },
     beeadopter: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: {},
+    },
+    imageCover: {
+      type: String,
+      required: [true, "A beehive must have a cover image"],
     },
     place: {
       type: String,

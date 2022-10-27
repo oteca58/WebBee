@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       enum: ["beeadopter", "admin", "beekeeper"],
       default: "beeadopter",
     },
+    photo: {
+      type: String,
+      required: [true, "A user must have a photo"],
+    },
     password: {
       type: String,
       required: [true, "Please, insert your password:"],
