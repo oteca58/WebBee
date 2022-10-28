@@ -132,3 +132,5 @@ dist
 # custom files
 /models/ratingBeehiveModel.js
 /config/config.env
+
+.prettierrc

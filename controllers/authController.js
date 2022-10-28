@@ -1,5 +1,5 @@
 const User = require("./../models/userModel");
-const crypto = require("crypto"); 
+const crypto = require("crypto");
 const util = require("util");
 const catchAsync = require("./../utils/catchAsync");
 const jwt = require("jsonwebtoken");
@@ -14,25 +14,25 @@ const signToken = (id) => {
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
-  // const cookieOptions = {
-  //   expires: new Date(
-  //     Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-  //   ),
-  //   httpOnly: true
-  // };
-  // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
-  // res.cookie('jwt', token, cookieOptions);
+  res.cookie("jwt", token, cookieOptions);
 
   // Remove password from output
   user.password = undefined;
 
   res.status(statusCode).json({
-    status: 'success',
+    status: "success",
     token,
     data: {
-      user
-    }
+      user,
+    },
   });
 };
 
@@ -69,6 +69,14 @@ exports.login = catchAsync(async (req, res, next) => {
 
   //3)if everything ok, send token to  client
   createSendToken(user, 200, res);
+});
+
+exports.logout = catchAsync(async (req, res, next) => {
+  res
+    .clearCookie("jwt")
+    .json({ message: "Successfully logged out" })
+    // REDIRECT OT HOME
+    .redirect("/");
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -163,16 +171,16 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .digest("hex");
 
   const user = await User.findOne({
-    passwordResetToken: hashedToken, 
-    passwordResetExpires: {$gt: Date.now()}
-});
-  
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
   //2) if token has not expired
   if (!!user) {
-    return next(new AppError("Token is iinvalid or has expired", 400))
+    return next(new AppError("Token is iinvalid or has expired", 400));
   }
-  user.password= req.body.password;
-  user.passwordConfirm= req.body.passwordConfirm;
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
@@ -184,12 +192,12 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
   // 1) Get user from collection
-  const user = await User.findById(req.user.id).select('+password');
+  const user = await User.findById(req.user.id).select("+password");
 
   // 2) Check if current password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
-    return next(new AppError('Your current password is wrong.', 401));
-  };
+    return next(new AppError("Your current password is wrong.", 401));
+  }
 
   // 3) If password is correct, update password
   user.password = req.body.password;
