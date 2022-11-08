@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "NODE_ENV=test jest --detectOpenHandles",
+    "test": "NODE_ENV=test jest --detectOpenHandles  --forceExit",
     "start": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon server.js"
   },

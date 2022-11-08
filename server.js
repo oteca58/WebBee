@@ -1,16 +1,10 @@
 const dotenv = require("dotenv");
 const { default: mongoose } = require("mongoose");
 const app = require("./app");
+const http = require("http");
 
 const { MongoMemoryServer } = require("mongodb-memory-server");
 let mongod = null;
-
-//manage uncaught exception
-process.on("uncaughtException", (err) => {
-  console.log("Uncaught Exception. Shutting down...");
-  console.log(err.name, err.message);
-  process.exit(1); //0 is for success and 1 is for errors
-});
 
 dotenv.config({ path: "./config/config.env" });
 
@@ -26,7 +20,7 @@ const connectDB = async () => {
       DB = mongod.getUri();
     }
 
-    const conn = await mongoose
+    await mongoose
       .connect(DB, {
         useNewUrlParser: true,
       })
@@ -50,23 +44,27 @@ const disconnectDB = async () => {
   }
 };
 
+connectDB();
+
 const port = process.env.PORT || 3000;
 
-function createHttpserver(port) {
-  const app = require("./app");
-  const server = app.listen(port, () => {
-    console.log(`App running on port ${port}`);
+if (process.env.NODE_ENV !== "test") {
+  function server() {
+    const server = (http.server = app.listen(port, () => {
+      console.log(`App running on port ${port}`);
+    }));
+    return server;
+  }
+  server();
+  //manage other errors DA RIMETTERE
+  process.on("unhandledRejection", (err) => {
+    console.log("Unhandled Rejection. Shutting down...");
+    console.log(err.name, err.message);
+    //before closing server and after the app
+    server.close(() => {
+      process.exit(1); //0 is for success and 1 is for errors
+    });
   });
-  return server;
 }
-//manage other errors DA RIMETTERE
-// process.on("unhandledRejection", (err) => {
-//   console.log("Unhandled Rejection. Shutting down...");
-//   console.log(err.name, err.message);
-//   //before closing server and after the app
-//   server.close(() => {
-//     process.exit(1); //0 is for success and 1 is for errors
-//   });
-// });
-//if (process.env.NODE_ENV !== "test") createHttpserver(port);
-module.exports = { connectDB, disconnectDB, createHttpserver };
+
+module.exports = { connectDB, disconnectDB };

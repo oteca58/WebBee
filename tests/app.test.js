@@ -1,9 +1,7 @@
-//const supertest = require("supertest");
-const { agent } = require("supertest");
-//const app = require("./../app");
-const { createHttpserver, connectDB, disconnectDB } = require("./../server");
-const httpServer = createHttpserver(3000);
-const request = agent(httpServer);
+const request = require("supertest");
+const app = require("./../app");
+const connectDB = require("./../server").connectDB;
+const disconnectDB = require("./../server").disconnectDB;
 
 describe("API test", () => {
   beforeAll(() => {
@@ -12,22 +10,32 @@ describe("API test", () => {
 
   afterAll(() => {
     disconnectDB();
-    httpServer.close();
   });
 
-  describe("POST /api/v1/users", () => {
-    it("example request using a mocked database instance", async () => {
-      let url = request.get("/api/v1/users/signup");
-      console.log(url.url);
-      const res = await request.post("/api/v1/users/signup", {
+  describe("signup and login", () => {
+    it("signup method", async () => {
+      let user = {
         name: "beeadopter",
         email: "beeadopter@webBee.it",
         password: "beeadopter",
         passwordConfirm: "beeadopter",
         role: "beeadopter",
-      });
-      //jest.setTimeout(10000);
+      };
+      let result = request(app).post("/api/v1/users/signup").send(user);
+
+      const res = await result;
       expect(res.status).toBe(201);
+    });
+
+    it("login method", async () => {
+      let user = {
+        email: "beeadopter@webBee.it",
+        password: "beeadopter",
+      };
+      let result = request(app).post("/api/v1/users/login").send(user);
+
+      const res = await result;
+      expect(res.status).toBe(200);
     });
   });
 });
