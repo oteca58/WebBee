@@ -37,5 +37,22 @@ describe("API test", () => {
       const res = await result;
       expect(res.status).toBe(200);
     });
+    it("logout method", async () => {
+    
+      let result = request(app).post("/api/v1/users/logout").send();
+
+      const res = await result;
+      expect(res.status).toBe(200);
+    });
   });
-});
+
+    it("logout method", async () => {
+     
+      let result = request(app).post("/api/v1/users/logout").send();
+
+      const res = await result;
+      console.log(res.json)
+      expect(res.body).toStrictEqual({ "message": "Successfully logged out" });
+    });
+  });
+

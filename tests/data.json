@@ -1,0 +1,21 @@
+{
+  "user": {
+    "name": "beeadopter",
+    "email": "beeadopter@webBee.it",
+    "password": "beeadopter",
+    "passwordConfirm": "beeadopter",
+    "role": "beeadopter"
+  },
+
+  "beehive": {
+    "serial_beehive": "",
+    "serial_beekeeper": "",
+    "beeadopter": "",
+    "place": "bari",
+    "state": "production",
+    "honeycomb": 1,
+    "pollin_trap": false,
+    "propolis_net": true,
+    "price": 5
+  }
+}
